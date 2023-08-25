@@ -7,7 +7,7 @@ const Controller = {
       if (!page) page = 1;
       if (!limit) limit = 10;
 
-      const skip = (page - 1) * 10;
+      const skip = (page - 1) * limit;
       const result = await CourseModel.find()
         .sort({ [sort]: asc })
         .skip(skip)
