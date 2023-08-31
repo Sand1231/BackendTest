@@ -41,7 +41,7 @@ const Controller = {
   },
   SeachCourseWithPagination: async (req, res) => {
     try {
-      const { pageSize, PageNo, searchByVal, searchKey } = req.body;
+      let { pageSize, PageNo, searchByVal, searchKey } = req.body;
       if (!pageSize) pageSize = 1;
       if (!PageNo) PageNo = 10;
       let result = await CourseModel.find({ [searchKey]: searchByVal })
