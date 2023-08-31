@@ -101,8 +101,9 @@ const Controller = {
   SearchCourse: async (req, res) => {
     let { searchKey, searchVal } = req.query;
     try {
+    searchVal = searchVal.toLowerCase();
       let result = await CourseModel.find({
-        [searchKey]: searchVal,
+        [searchKey]: { $regex: new RegExp(searchVal, "i") },
       });
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
