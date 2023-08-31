@@ -6,13 +6,13 @@ const route = express.Router();
 
 route.get("/", Controller.GetCourse);
 
-route.get("/:id", Controller.SingleCourse);
-
 route.get("/searchStd", Controller.SeachCourseWithPagination);
 
-route.post("/", Controller.PostCourse);
-
 route.get("/search", Controller.SearchCourse);
+
+route.get("/:id", Controller.SingleCourse);
+
+route.post("/", Controller.PostCourse);
 
 route.put("/:id", Controller.EditCourse);
 
