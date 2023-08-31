@@ -8,7 +8,7 @@ route.get("/", Controller.GetCourse);
 
 route.get("/:id", Controller.SingleCourse);
 
-route.post("/searchStd", Controller.SeachCourseWithPagination);
+route.get("/searchStd", Controller.SeachCourseWithPagination);
 
 route.post("/", Controller.PostCourse);
 

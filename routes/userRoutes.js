@@ -49,10 +49,9 @@ route.get("/", AuthController.getUsers);
 route.get("/test", AuthController.protected, (req, res) => {
   res.send("/User Valid");
 });
-route.post("/changePassword", AuthController.changePassword);
+route.post("/");
 route.get("/");
 route.put("/");
 route.delete("/");
-route.post("/deleteUser/:id", AuthController.deleteUser);
 
 module.exports = route;

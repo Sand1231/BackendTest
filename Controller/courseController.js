@@ -42,10 +42,11 @@ const Controller = {
   SeachCourseWithPagination: async (req, res) => {
     try {
       const { pageSize, PageNo, searchByVal, searchKey } = req.body;
-
+      if (!pageSize) pageSize = 1;
+      if (!PageNo) PageNo = 10;
       let result = await CourseModel.find({ [searchKey]: searchByVal })
         .skip((PageNo - 1) * pageSize)
-        .limit(PageNo);
+        .limit(pageSize);
 
       if (result) {
         res.send(sendResponse(true, result)).status(200);
@@ -98,11 +99,10 @@ const Controller = {
     res.send("Post single Student Data");
   },
   SearchCourse: async (req, res) => {
-    let { firstName, lastName } = req.body;
+    let { searchKey, searchVal } = req.body;
     try {
       let result = await CourseModel.find({
-        firstName: firstName,
-        lastName: lastName,
+        [searchKey]: searchVal,
       });
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
