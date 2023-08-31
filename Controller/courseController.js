@@ -110,7 +110,7 @@ const Controller = {
         res.send(sendResponse(true, result), "Data found").status(200);
       }
     } catch (e) {
-      res.send(sendResponse(false, null, "Internal Server Error")).status(400);
+      res.send(sendResponse(false, null, "Server Error")).status(400);
     }
   },
   EditCourse: async (req, res) => {
