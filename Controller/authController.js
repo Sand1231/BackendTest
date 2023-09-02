@@ -14,7 +14,7 @@ const AuthController = {
       let isConfirm = await bcrypt.compare(obj.password, result.password);
       if (isConfirm) {
         let token = jwt.sign({ ...result }, process.env.SECURE_KEY, {
-          expiresIn: "24h",
+          expiresIn: 10800, //Expires in 3 hours (3600) * 3 where 1 hour = 3600 seconds
         });
         res.send(
           sendResponse(true, { user: result, token }, "Login Successfully")
@@ -42,6 +42,9 @@ const AuthController = {
         if (err) {
           res.send(sendResponse(false, null, "Unauthorized")).status(403);
         } else {
+          res
+            .send(sendResponse(true, null, "User Authorized (authenticated)"))
+            .status(200);
           console.log(decode);
           next();
         }
