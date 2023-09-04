@@ -14,17 +14,18 @@ const AuthController = {
       let isConfirm = await bcrypt.compare(obj.password, result.password);
       if (isConfirm) {
         let token = jwt.sign({ ...result }, process.env.SECURE_KEY, {
-          expiresIn: 10800, //Expires in 3 hours (3600) * 3 where 1 hour = 3600 seconds
+          expiresIn: 10800,
         });
-        res.send(
+        return res.send(
           sendResponse(true, { user: result, token }, "Login Successfully")
         );
       } else {
-        res.send(sendResponse(false, null, "Credential Error"));
+        return res.send(sendResponse(false, null, "Credential Error"));
       }
-    } else {
-      res.send(sendResponse(false, err, "User Doesn't Exist"));
     }
+    // else {
+    //   res.send(sendResponse(false, err, "User Doesn't Exist"));
+    // }
   },
   getUsers: async (req, res) => {
     userModel
@@ -42,10 +43,20 @@ const AuthController = {
         if (err) {
           res.send(sendResponse(false, null, "Unauthorized")).status(403);
         } else {
+          // Include user information in the response
+          const { _id, userName, email } = decode; // You may need to adjust the property names
+          const userInfo = { _id, userName, email };
+
           res
-            .send(sendResponse(true, null, "User Authorized (authenticated)"))
+            .send(
+              sendResponse(
+                true,
+                { authenticated: true, user: decode },
+                "User Authorized (authenticated)"
+              )
+            )
             .status(200);
-          console.log(decode);
+          // console.log(decode.data.user._doc);
           next();
         }
       });
@@ -53,6 +64,7 @@ const AuthController = {
       res.send(sendResponse(false, null, "Server internal Error")).status(400);
     }
   },
+
   adminProtected: async (req, res, next) => {
     let token = req.headers.authorization;
     token = token.split(" ")[1];

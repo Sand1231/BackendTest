@@ -44,11 +44,9 @@ route.post("/signup", async (req, res) => {
     }
   }
 });
-route.post("/login", AuthController.login);
+route.get("/test", AuthController.protected);
 route.get("/", AuthController.getUsers);
-route.get("/test", AuthController.protected, (req, res) => {
-  res.send("/User Valid");
-});
+route.post("/login", AuthController.login);
 route.post("/");
 route.get("/");
 route.put("/");
