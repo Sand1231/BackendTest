@@ -65,12 +65,14 @@ const Controller = {
           endDate,
           creatorUserID,
         };
-        let Course = new ProjectModel(obj);
-        await Course.save();
-        if (!Course) {
+        let Project = new ProjectModel(obj);
+        await Project.save();
+        if (!Project) {
           res.send(sendResponse(false, null, "Data Not Found")).status(404);
         } else {
-          res.send(sendResponse(true, Course, "Save Successfully")).status(200);
+          res
+            .send(sendResponse(true, Project, "Save Successfully"))
+            .status(200);
         }
       }
     } catch (e) {
