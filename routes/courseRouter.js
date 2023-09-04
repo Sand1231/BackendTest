@@ -1,6 +1,4 @@
 const express = require("express");
-const CourseModel = require("../models/CourseModel");
-const sendResponse = require("../Helper/Helper");
 const Controller = require("../Controller/courseController");
 const route = express.Router();
 

@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const courseRouter = require("./routes/courseRouter");
 const userRoutes = require("./routes/userRoutes");
-const projectRouter = require("./routes/projectRouter")
+const projectRouter = require("./routes/projectRouter");
+const taskRouter = require("./routes/taskRouter");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -12,7 +13,8 @@ app.use(cors());
 
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRoutes);
-app.use("/api/projects",projectRouter)
+app.use("/api/projects", projectRouter);
+app.use("/api/tasks", taskRouter);
 
 app.get("/", (req, res) => {
   res.send("Server Started");
