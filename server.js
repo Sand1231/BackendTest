@@ -12,7 +12,7 @@ app.use(cors());
 
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRoutes);
-app.use("/api/register",projectRouter)
+app.use("/api/projects",projectRouter)
 
 app.get("/", (req, res) => {
   res.send("Server Started");
