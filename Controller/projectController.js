@@ -78,6 +78,22 @@ const Controller = {
       res.send(sendResponse(false, null, "Internal Server Error")).status(400);
     }
   },
+  SearchCourse: async (req, res) => {
+    let { searchKey, searchVal } = req.query;
+    try {
+      searchVal = searchVal.toLowerCase();
+      let result = await ProjectModel.find({
+        [searchKey]: { $regex: new RegExp(searchVal, "i") },
+      });
+      if (!result) {
+        res.send(sendResponse(false, null, "No Data Found")).status(404);
+      } else {
+        res.send(sendResponse(true, result, "Data found")).status(200);
+      }
+    } catch (e) {
+      res.send(sendResponse(false, null, "Server Error")).status(400);
+    }
+  },
 };
 
 module.exports = Controller;
