@@ -26,13 +26,17 @@ const Controller = {
     }
   },
   postProject: async (req, res) => {
-    let { name, description, startDate, endDate, creatorUserID } = req.body;
+    let { name, category, description, startDate, endDate, creatorUserID } =
+      req.body;
     try {
       let errArr = [];
 
       //validation Part
       if (!name) {
         errArr.push("Required name");
+      }
+      if (!category) {
+        errArr.push("Required category");
       }
       if (!description) {
         errArr.push("Required description");
@@ -53,7 +57,14 @@ const Controller = {
           .status(400);
         return;
       } else {
-        let obj = { name, description, startDate, endDate, creatorUserID };
+        let obj = {
+          name,
+          category,
+          description,
+          startDate,
+          endDate,
+          creatorUserID,
+        };
         let Course = new ProjectModel(obj);
         await Course.save();
         if (!Course) {
