@@ -4,16 +4,26 @@ const ProjectModel = require("../models/ProjectModel");
 const Controller = {
   getProjects: async (req, res) => {
     try {
-      let { page, limit, sort, asc } = req.query;
+      let { page, limit, sort, asc, userId } = req.query;
       // if (!page) page = 1;
       // if (!limit) limit = 10;
 
+      const filter = {};
+      if (userId) {
+        filter.creatorUserID = userId;
+      } else {
+        // If userId is not provided, you can choose to return an empty result
+        // or a different response as needed.
+        res
+          .send(sendResponse(true, [], "No Data Found", "", page, limit))
+          .status(200);
+        return; // Exit the function
+      }
       const skip = (page - 1) * limit;
-      const result = await ProjectModel.find()
-        .sort({ [sort]: asc })
-        // .skip(skip)
-        // .limit(limit);
-      if (!result) {
+      const result = await ProjectModel.find(filter).sort({ [sort]: asc });
+      // .skip(skip)
+      // .limit(limit);
+      if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
         res
