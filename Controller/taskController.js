@@ -1,26 +1,32 @@
 const sendResponse = require("../Helper/Helper");
 const TaskModel = require("../models/TaskModel");
+const mongoose = require("mongoose");
 
 const Controller = {
-   GetTasks: async (req, res) => {
+  GetTasks: async (req, res) => {
     try {
-      let { page, limit, sort, asc, DueDate } = req.query;
-      if (!page) page = 1;
-      if (!limit) limit = 10;
-  
+      let { page, limit, sort, asc, DueDate, userId } = req.query;
+      // if (!page) page = 1;
+      // if (!limit) limit = 10;
+
       const skip = (page - 1) * limit;
-      
+
       // Create a filter object based on the optional DueDate parameter
+
       const filter = {};
       if (DueDate) {
         filter.DueDate = DueDate;
       }
-  
-      const result = await TaskModel.find(filter)
-        .sort({ [sort]: asc })
-        .skip(skip)
-        .limit(limit);
-  
+
+      if (userId) {
+        // Assuming userId is provided as a string in the request query
+        filter.TeamMembers = userId;
+      }
+
+      const result = await TaskModel.find(filter).sort({ [sort]: asc });
+      // .skip(skip)
+      // .limit(limit);
+
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {

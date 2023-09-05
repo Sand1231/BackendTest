@@ -5,14 +5,14 @@ const Controller = {
   getProjects: async (req, res) => {
     try {
       let { page, limit, sort, asc } = req.query;
-      if (!page) page = 1;
-      if (!limit) limit = 10;
+      // if (!page) page = 1;
+      // if (!limit) limit = 10;
 
       const skip = (page - 1) * limit;
       const result = await ProjectModel.find()
         .sort({ [sort]: asc })
-        .skip(skip)
-        .limit(limit);
+        // .skip(skip)
+        // .limit(limit);
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
