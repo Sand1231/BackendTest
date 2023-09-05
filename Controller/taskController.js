@@ -2,17 +2,25 @@ const sendResponse = require("../Helper/Helper");
 const TaskModel = require("../models/TaskModel");
 
 const Controller = {
-  GetTasks: async (req, res) => {
+   GetTasks: async (req, res) => {
     try {
-      let { page, limit, sort, asc } = req.query;
+      let { page, limit, sort, asc, DueDate } = req.query;
       if (!page) page = 1;
       if (!limit) limit = 10;
-
+  
       const skip = (page - 1) * limit;
-      const result = await TaskModel.find()
+      
+      // Create a filter object based on the optional DueDate parameter
+      const filter = {};
+      if (DueDate) {
+        filter.DueDate = DueDate;
+      }
+  
+      const result = await TaskModel.find(filter)
         .sort({ [sort]: asc })
         .skip(skip)
         .limit(limit);
+  
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
