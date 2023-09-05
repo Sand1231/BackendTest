@@ -28,12 +28,18 @@ const AuthController = {
     // }
   },
   getUsers: async (req, res) => {
-    userModel
-      .find()
-      .then((result) => {
-        res.send(sendResponse(true, result));
-      })
-      .catch((err) => {});
+    try {
+      const users = await userModel.find().select("-password");
+  
+      if (users) {
+        res.send(sendResponse(true, users));
+      } else {
+        res.send(sendResponse(false, null, "No users found"));
+      }
+    } catch (err) {
+      // Handle errors here
+      res.status(500).send(sendResponse(false, null, "Internal Server Error"));
+    }
   },
   protected: async (req, res, next) => {
     let token = req.headers.authorization;

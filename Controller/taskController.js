@@ -26,8 +26,15 @@ const Controller = {
     }
   },
   PostTask: async (req, res) => {
-    const { Title, Description, DueDate, Priority, Status, CreatorUserID } =
-      req.body;
+    const {
+      Title,
+      Description,
+      DueDate,
+      Priority,
+      Status,
+      CreatorUserID,
+      TeamMembers,
+    } = req.body;
     try {
       let errArr = [];
 
@@ -64,6 +71,7 @@ const Controller = {
           Priority,
           Status,
           CreatorUserID,
+          TeamMembers,
         };
         let Task = new TaskModel(obj);
         await Task.save();
