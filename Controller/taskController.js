@@ -6,8 +6,8 @@ const Controller = {
   GetTasks: async (req, res) => {
     try {
       let { page, limit, sort, asc, DueDate, userId } = req.query;
-      // if (!page) page = 1;
-      // if (!limit) limit = 10;
+      if (!page) page = 1;
+      if (!limit) limit = 10;
 
       const skip = (page - 1) * limit;
 
@@ -23,9 +23,10 @@ const Controller = {
         filter.TeamMembers = userId;
       }
 
-      const result = await TaskModel.find(filter).sort({ [sort]: asc });
-      // .skip(skip)
-      // .limit(limit);
+      const result = await TaskModel.find(filter)
+        .sort({ [sort]: asc })
+        .skip(skip)
+        .limit(limit);
 
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
