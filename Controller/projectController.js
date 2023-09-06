@@ -22,10 +22,10 @@ const Controller = {
 
       // Use the populate method to populate the 'tasks' field
       const result = await ProjectModel.find(filter)
-        .populate("tasks") // Populate the tasks field
-        .sort({ [sort]: asc })
-        .skip(skip)
-        .limit(limit);
+      .sort({ [sort]: asc })
+      .skip(skip)
+      .limit(limit)
+      .populate("tasks"); // Populate the tasks field
 
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
