@@ -1,33 +1,33 @@
 const sendResponse = require("../Helper/Helper");
 const TaskModel = require("../models/TaskModel");
-
+const ProjectModel = require("../models/ProjectModel");
 const Controller = {
   GetTasks: async (req, res) => {
     try {
       let { page, limit, sort, asc, DueDate, userId } = req.query;
       if (!page) page = 1;
-      if (!limit) limit = 10;
-  
+      if (!limit) limit = 40;
+
       const skip = (page - 1) * limit;
-  
+
       // Create a filter object based on the optional DueDate parameter
-  
+
       const filter = {};
       if (DueDate) {
         filter.DueDate = DueDate;
       }
-  
+
       if (userId) {
         // Assuming userId is provided as a string in the request query
         filter.TeamMembers = userId;
       }
-  
+
       const result = await TaskModel.find(filter)
         .sort({ [sort]: asc })
         .skip(skip)
         .limit(limit)
         .populate("projectId"); // Use the correct field name here
-  
+
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
@@ -40,7 +40,7 @@ const Controller = {
       res.send(sendResponse(false, null, "Server Internal Error")).status(500); // Changed status code to 500 for server error
     }
   },
-  
+
   PostTask: async (req, res) => {
     const {
       Title,
@@ -77,6 +77,9 @@ const Controller = {
       if (!projectId) {
         errArr.push("Required projectId");
       }
+      if (!TeamMembers) {
+        errArr.push("Required TeamMembers");
+      }
 
       if (errArr.length > 0) {
         res
@@ -99,6 +102,11 @@ const Controller = {
         if (!Task) {
           res.send(sendResponse(false, null, "Data Not Found")).status(404);
         } else {
+          await ProjectModel.findByIdAndUpdate(
+            obj.projectId,
+            { $push: { tasks: Task._id } },
+            { new: true }
+          );
           res.send(sendResponse(true, Task, "Save Successfully")).status(200);
         }
       }

@@ -1,12 +1,11 @@
 const sendResponse = require("../Helper/Helper");
 const ProjectModel = require("../models/ProjectModel");
-
 const Controller = {
   getProjects: async (req, res) => {
     try {
       let { page, limit, sort, asc, userId } = req.query;
       if (!page) page = 1;
-      if (!limit) limit = 10;
+      if (!limit) limit = 40;
 
       const filter = {};
       if (userId) {
@@ -23,10 +22,10 @@ const Controller = {
 
       // Use the populate method to populate the 'tasks' field
       const result = await ProjectModel.find(filter)
+        .populate("tasks") // Populate the tasks field
         .sort({ [sort]: asc })
         .skip(skip)
-        .limit(limit)
-        .populate("tasks");
+        .limit(limit);
 
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
@@ -41,8 +40,15 @@ const Controller = {
     }
   },
   postProject: async (req, res) => {
-    let { name, category, description, startDate, endDate, creatorUserID } =
-      req.body;
+    let {
+      name,
+      tasks,
+      category,
+      description,
+      startDate,
+      endDate,
+      creatorUserID,
+    } = req.body;
     try {
       let errArr = [];
 
@@ -66,6 +72,9 @@ const Controller = {
       if (!creatorUserID) {
         errArr.push("Required creatorUserID");
       }
+      if (!tasks) {
+        errArr.push("Required tasks");
+      }
       if (errArr.length > 0) {
         res
           .send(sendResponse(false, errArr, null, "Required All Fields"))
@@ -79,6 +88,7 @@ const Controller = {
           startDate,
           endDate,
           creatorUserID,
+          tasks,
         };
         let Project = new ProjectModel(obj);
         await Project.save();
