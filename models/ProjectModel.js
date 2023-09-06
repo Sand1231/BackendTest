@@ -26,6 +26,12 @@ const projectSchema = new mongoose.Schema({
     ref: "users", // Reference to the User model
     required: true,
   },
+  tasks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task", // Reference to the Task model
+    },
+  ],
 });
 
 const Project = mongoose.model("Project", projectSchema);

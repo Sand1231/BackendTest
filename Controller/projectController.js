@@ -20,10 +20,14 @@ const Controller = {
         return; // Exit the function
       }
       const skip = (page - 1) * limit;
+
+      // Use the populate method to populate the 'tasks' field
       const result = await ProjectModel.find(filter)
         .sort({ [sort]: asc })
         .skip(skip)
-        .limit(limit);
+        .limit(limit)
+        .populate("tasks");
+
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
