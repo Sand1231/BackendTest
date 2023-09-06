@@ -26,7 +26,8 @@ const Controller = {
       const result = await TaskModel.find(filter)
         .sort({ [sort]: asc })
         .skip(skip)
-        .limit(limit);
+        .limit(limit)
+        .populate("projectId");
 
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
@@ -49,6 +50,7 @@ const Controller = {
       Status,
       CreatorUserID,
       TeamMembers,
+      projectId,
     } = req.body;
     try {
       let errArr = [];
@@ -72,6 +74,9 @@ const Controller = {
       if (!CreatorUserID) {
         errArr.push("Required CreatorUserID");
       }
+      if (!projectId) {
+        errArr.push("Required projectId");
+      }
 
       if (errArr.length > 0) {
         res
@@ -87,6 +92,7 @@ const Controller = {
           Status,
           CreatorUserID,
           TeamMembers,
+          projectId,
         };
         let Task = new TaskModel(obj);
         await Task.save();
@@ -100,7 +106,6 @@ const Controller = {
       console.log(e);
       res.send(sendResponse(false, null, "Internal Server Error")).status(400);
     }
-    res.send("Post single Student Data");
   },
 };
 
