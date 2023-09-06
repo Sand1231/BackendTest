@@ -25,7 +25,10 @@ const Controller = {
       .sort({ [sort]: asc })
       .skip(skip)
       .limit(limit)
-      .populate("tasks"); // Populate the tasks field
+      .populate({
+        path: 'tasks', // Name of the field to populate
+        model: 'Task', // The model to use for population
+      }); // Populate the tasks field
 
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
