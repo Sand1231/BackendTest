@@ -9,7 +9,6 @@ const Controller = {
       if (!limit) limit = 40;
 
       const skip = (page - 1) * limit;
-
       // Create a filter object based on the optional DueDate parameter
 
       const filter = {};
@@ -26,7 +25,7 @@ const Controller = {
         .sort({ [sort]: asc })
         .skip(skip)
         .limit(limit)
-        .populate("projectId"); // Use the correct field name here
+        .populate("projectId")
 
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);

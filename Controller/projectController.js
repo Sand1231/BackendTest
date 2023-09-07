@@ -22,13 +22,13 @@ const Controller = {
 
       // Use the populate method to populate the 'tasks' field
       const result = await ProjectModel.find(filter)
-      .sort({ [sort]: asc })
-      .skip(skip)
-      .limit(limit)
-      .populate({
-        path: 'tasks', // Name of the field to populate
-        model: 'Task', // The model to use for population
-      }); // Populate the tasks field
+        .sort({ [sort]: asc })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: "tasks", // Name of the field to populate
+          model: "Task", // The model to use for population
+        }); // Populate the tasks field
 
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
@@ -114,6 +114,9 @@ const Controller = {
       searchVal = searchVal.toLowerCase();
       let result = await ProjectModel.find({
         [searchKey]: { $regex: new RegExp(searchVal, "i") },
+      }).populate({
+        path: "tasks", // Name of the field to populate
+        model: "Task", // The model to use for population
       });
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
