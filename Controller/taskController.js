@@ -1,6 +1,8 @@
 const sendResponse = require("../Helper/Helper");
 const TaskModel = require("../models/TaskModel");
 const ProjectModel = require("../models/ProjectModel");
+const TaskLabelAssociation = require("../models/task_LabelAssociation");
+
 const Controller = {
   GetTasks: async (req, res) => {
     try {
@@ -18,14 +20,14 @@ const Controller = {
 
       if (userId) {
         // Assuming userId is provided as a string in the request query
-        filter.TeamMembers = userId;
+        filter.CreatorUserID = userId;
       }
 
       const result = await TaskModel.find(filter)
         .sort({ [sort]: asc })
         .skip(skip)
         .limit(limit)
-        .populate("projectId")
+        .populate("projectId");
 
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
@@ -112,6 +114,43 @@ const Controller = {
     } catch (e) {
       console.log(e);
       res.send(sendResponse(false, null, "Internal Server Error")).status(400);
+    }
+  },
+
+  UpdateTask: async (req, res) => {
+    try {
+      const taskId = req.params.id;
+      const { Status, Priority } = req.body;
+      if (!Status && !Priority) {
+        return res
+          .send(
+            sendResponse(false, null, "Provide Status or Priority for update.")
+          )
+          .status(400);
+      }
+      const updatedFields = {};
+      if (Status) {
+        updatedFields.Status = Status;
+      }
+      if (Priority) {
+        updatedFields.Priority = Priority;
+      }
+      const updatedTask = await TaskModel.findByIdAndUpdate(
+        taskId,
+        { $set: updatedFields },
+        { new: true }
+      );
+      if (!updatedTask) {
+        return res
+          .send(sendResponse(false, null, "Task not found."))
+          .status(404);
+      }
+      res
+        .send(sendResponse(true, updatedTask, "Update Successful"))
+        .status(200);
+    } catch (err) {
+      console.log(err);
+      res.send(sendResponse(false, null, "Internal Server Error")).status(500);
     }
   },
 };

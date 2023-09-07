@@ -52,7 +52,6 @@ const AuthController = {
           // Include user information in the response
           const { _id, userName, email } = decode; // You may need to adjust the property names
           const userInfo = { _id, userName, email };
-
           res
             .send(
               sendResponse(
