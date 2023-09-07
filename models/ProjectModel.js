@@ -32,6 +32,12 @@ const projectSchema = new mongoose.Schema({
       ref: "Task", // Reference to the Task model
     },
   ],
+  Labels: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProjectLabel",
+    },
+  ],
 });
 
 const Project = mongoose.model("Project", projectSchema);

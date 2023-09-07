@@ -4,6 +4,8 @@ const route = express.Router();
 
 route.get("/", Controller.GetTasks);
 route.post("/", Controller.PostTask);
-route.patch("/:id",Controller.UpdateTask);
+route.post("/createLabel", Controller.CreateLabel);
+route.patch("/move", Controller.MoveTaskToLabel);
+route.patch("/:id", Controller.UpdateTask);
 
 module.exports = route;

@@ -1,5 +1,6 @@
 const sendResponse = require("../Helper/Helper");
 const ProjectModel = require("../models/ProjectModel");
+const LabelModel = require("../models/projectLabelModel"); // Import the Label model
 const Controller = {
   getProjects: async (req, res) => {
     try {
@@ -14,7 +15,7 @@ const Controller = {
         // If userId is not provided, you can choose to return an empty result
         // or a different response as needed.
         res
-          .send(sendResponse(true, [], "No Data Found", "", page, limit))
+          .send(sendResponse(true,null, "No Data Found", "", page, limit))
           .status(200);
         return; // Exit the function
       }
@@ -28,7 +29,8 @@ const Controller = {
         .populate({
           path: "tasks", // Name of the field to populate
           model: "Task", // The model to use for population
-        }); // Populate the tasks field
+        })
+        .populate("Labels"); // Populate the tasks field
 
       if (!result || result.length === 0) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
@@ -126,6 +128,46 @@ const Controller = {
     } catch (e) {
       res.send(sendResponse(false, null, "Server Error")).status(400);
     }
+  },
+  createLabel: async (req, res) => {
+    try {
+      const { Name, Color, ProjectID } = req.body;
+
+      try {
+        if (!Name || !Color || !ProjectID) {
+          return res
+            .send(
+              sendResponse(
+                false,
+                null,
+                "Name, Color, and ProjectID are required."
+              )
+            )
+            .status(400);
+        }
+        const label = new LabelModel({ Name, Color, ProjectID });
+        await label.save();
+        await ProjectModel.findByIdAndUpdate(
+          ProjectID,
+          { $push: { Labels: label._id } },
+          { new: true }
+        );
+        res
+          .send(
+            sendResponse(
+              true,
+              label,
+              "Label created and associated with task successfully."
+            )
+          )
+          .status(200);
+      } catch (error) {
+        console.error(error);
+        res
+          .send(sendResponse(false, null, "Internal Server Error"))
+          .status(500);
+      }
+    } catch (error) {}
   },
 };
 

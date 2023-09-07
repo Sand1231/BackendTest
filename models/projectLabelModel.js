@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const labelSchema = new mongoose.Schema({
+const projectlabelSchema = new mongoose.Schema({
   Name: {
     type: String,
     required: true,
@@ -9,13 +9,13 @@ const labelSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  TaskID: {
+  ProjectID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Task",
+    ref: "Project",
     required: true,
   },
 });
 
-const Label = mongoose.model("Label", labelSchema);
+const Label = mongoose.model("ProjectLabel", projectlabelSchema);
 
 module.exports = Label;

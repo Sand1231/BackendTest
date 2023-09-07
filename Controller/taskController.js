@@ -1,7 +1,8 @@
 const sendResponse = require("../Helper/Helper");
 const TaskModel = require("../models/TaskModel");
 const ProjectModel = require("../models/ProjectModel");
-const TaskLabelAssociation = require("../models/task_LabelAssociation");
+const TaskLabelAssociationModel = require("../models/task_LabelAssociation");
+const LabelModel = require("../models/LabelModel"); // Import the Label model
 
 const Controller = {
   GetTasks: async (req, res) => {
@@ -27,8 +28,8 @@ const Controller = {
         .sort({ [sort]: asc })
         .skip(skip)
         .limit(limit)
-        .populate("projectId");
-
+        .populate("projectId")
+        .populate("Labels");
       if (!result) {
         res.send(sendResponse(false, null, "No Data Found")).status(404);
       } else {
@@ -153,6 +154,124 @@ const Controller = {
       res.send(sendResponse(false, null, "Internal Server Error")).status(500);
     }
   },
+
+  CreateLabel: async (req, res) => {a
+    const { Name, Color, TaskID } = req.body;
+
+    try {
+      if (!Name || !Color || !TaskID) {
+        return res
+          .send(
+            sendResponse(false, null, "Name, Color, and TaskID are required.")
+          )
+          .status(400);
+      }
+      const label = new LabelModel({ Name, Color, TaskID });
+      await label.save();
+      await TaskModel.findByIdAndUpdate(
+        TaskID,
+        { $push: { Labels: label._id } },
+        { new: true }
+      );
+      res
+        .send(
+          sendResponse(
+            true,
+            label,
+            "Label created and associated with task successfully."
+          )
+        )
+        .status(200);
+    } catch (error) {
+      console.error(error);
+      res.send(sendResponse(false, null, "Internal Server Error")).status(500);
+    }
+  },
+
+  AssociateTaskWithLabel: async (req, res) => {
+    try {
+      const { taskId, labelId } = req.body;
+
+      const task = await TaskModel.findById(taskId);
+      if (!task) {
+        return res
+          .send(sendResponse(false, null, "Task not found."))
+          .status(404);
+      }
+
+      const label = await LabelModel.findById(labelId);
+      if (!label) {
+        return res
+          .send(sendResponse(false, null, "Label not found."))
+          .status(404);
+      }
+
+      const association = new TaskLabelAssociationModel({
+        TaskID: taskId,
+        LabelID: labelId,
+      });
+
+      await association.save();
+
+      res
+        .send(
+          sendResponse(
+            true,
+            association,
+            "Task-Label association created successfully."
+          )
+        )
+        .status(200);
+    } catch (error) {
+      console.error(error);
+      res.send(sendResponse(false, null, "Internal Server Error")).status(500);
+    }
+  },
+
+  MoveTaskToLabel: async (req, res) => {
+    try {
+      const { taskId, newLabelId } = req.body;
+  
+      const task = await TaskModel.findById(taskId);
+      if (!task) {
+        return res
+          .send(sendResponse(false, null, "Task not found."))
+          .status(404);
+      }
+  
+      const label = await LabelModel.findById(newLabelId);
+      if (!label) {
+        return res
+          .send(sendResponse(false, null, "Label not found."))
+          .status(404);
+      }
+  
+      // Remove the old association, if any
+      await TaskLabelAssociationModel.deleteOne({ TaskID: taskId });
+  
+      // Create a new association with the new label
+      const association = new TaskLabelAssociationModel({
+        TaskID: taskId,
+        LabelID: newLabelId,
+      });
+  
+      await association.save();
+  
+      // Update the task's Labels array with the new label ID
+      task.Labels.push(newLabelId)
+      await task.save();
+  
+      res
+        .send(
+          sendResponse(true, task, "Task moved to a new label successfully.")
+        )
+        .status(200);
+    } catch (error) {
+      console.error(error);
+      res.send(sendResponse(false, null, "Internal Server Error")).status(500);
+    }
+  },
+  
 };
 
 module.exports = Controller;
