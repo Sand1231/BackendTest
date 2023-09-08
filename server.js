@@ -17,7 +17,7 @@ app.use("/api/projects", projectRouter);
 app.use("/api/tasks", taskRouter);
 
 app.get("/", (req, res) => {
-  res.send("Server Started");
+  res.send("Server is Started....");
 });
 
 mongoose
